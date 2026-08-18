@@ -4,4 +4,4 @@ concommand.Add( "set_time", function( ply, cmd, args )
 end )
 
 -- AirWars: Skyfall developer test harness.
-include("server/dev_tests.lua")
+include("server/dev_tests_v2.lua")
