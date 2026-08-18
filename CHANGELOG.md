@@ -22,6 +22,13 @@ All notable changes to **AirWars: Skyfall** will be documented here.
 - Hardened shared team/name/leader helpers against missing team state.
 - Hardened physgun ownership checks against invalid/non-AirWars entities.
 
+### Developer testing
+- Added a server-side Skyfall developer test harness.
+- Added `aw_test_all` automated `PASS` / `WARN` / `FAIL` smoke testing for core globals, configuration, round state, entities, SWEPs, network strings, teams, players, and active ships.
+- Added `aw_test_buildship` to generate a standardized ten-part test craft containing the helm, propulsion/lift, spawn, ammo storage, cannon, rifle, grappling hook, and bomb.
+- Added commands for developer mode, immediate fight start, round reset, timer control, respawn, status/ship inspection, and destructive round-trip validation.
+- Added `TESTING.md` with the fast local workflow and manual regression checklist.
+
 ### Still to verify in-game
 - Building phase completes and transitions into combat.
 - Spawned ships respond to helm controls.
