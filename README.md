@@ -1,14 +1,84 @@
-# AirWars
-Airwars is a unique gamemode where you can build your own steampunk ship and fight with other players.
+# AirWars: Skyfall
 
-Gamemode includes:
-- Own soundtrack
-- Characted customization system
-- Big battles up to 15 ships on the field(Maybe even more!)
-- No problems with game physics
-- Destructible ship system
-- Great visuals
-- Ability to draw your own flags
+**AirWars: Skyfall** is an open-source continuation and modernization of the original **AirWars** Garry's Mod gamemode by The HellBox and its contributors.
 
-# For server owners
-This gamemode is really CPU unfriendly. You better go with 4 GHz CPU, or at least 3.6.
+Skyfall's long-term goal is to preserve AirWars' freeform steampunk ship-building while expanding it into a modern multicrew airship-combat game inspired by the teamwork, engineering, gunnery, and PvE strengths of games such as *Guns of Icarus*.
+
+> **Development disclosure:** AirWars: Skyfall is developed with substantial assistance from **ChatGPT by OpenAI**, including programming, debugging, game design, balancing, documentation, research, and development planning. AI-assisted material is reviewed and integrated by the project maintainers. AirWars: Skyfall is an independent community project and is not affiliated with or endorsed by OpenAI.
+
+## Current Status
+
+**Version:** 0.1.0-skyfall-dev  
+**Milestone:** 0.1 — Resurrection
+
+The current milestone intentionally focuses on restoring the original AirWars gameplay on modern Garry's Mod before adding major new mechanics.
+
+### Resurrection goals
+
+- Restore reliable ship steering and controls.
+- Repair round start/reset logic.
+- Eliminate current Lua errors and stale API assumptions.
+- Verify building, ship spawning, combat, destruction, victory, and round reset.
+- Improve error handling and diagnostics.
+- Establish reliable dedicated-server operation.
+- Test Windows and Linux clients.
+- Preserve original gameplay until the baseline is stable.
+
+## Skyfall Vision
+
+After the original gamemode is stable, planned systems include:
+
+- Pilot, Engineer, and Gunner specialties without hard class restrictions.
+- Component-based ship damage and repair gameplay.
+- Fire, armor, penetration, and specialized ammunition.
+- Expanded steampunk weapons and ship components.
+- Saved ship blueprints and ready-to-play prefab ships.
+- Boarding, grappling, sabotage, and ship capture.
+- PvE / Alliance missions, AI airships, and AI crew.
+- Floating islands, fortresses, storms, fog, and environmental hazards.
+- Meaningful ship interiors including engineering spaces, magazines, bridges, and gun decks.
+- Tutorials, bots, accessibility improvements, and modern UI/HUD work.
+- Workshop-friendly extension points for community ships, weapons, maps, and missions.
+- Cosmetic-only progression if progression is introduced; no pay-to-win gameplay systems.
+
+See [ROADMAP.md](ROADMAP.md) for the development plan.
+
+## Original AirWars
+
+AirWars is a unique gamemode where players build their own steampunk ships and fight other crews. The original project includes custom assets and music, character customization, destructible ships, custom flags, and support for large multi-ship battles.
+
+Original project: **TheHellBox/AirWars**  
+Original author: **The HellBox**
+
+AirWars: Skyfall preserves the original project's copyright and MIT license. See [LICENSE](LICENSE).
+
+## For Server Owners
+
+The original AirWars code is CPU intensive. Performance and networking are explicit priorities for Skyfall, but the Resurrection milestone should initially be treated as development/testing software rather than a production-ready server gamemode.
+
+## Contributing
+
+Skyfall is being developed openly. Bug reports, testing results, profiling data, fixes, maps, models, balance feedback, and feature proposals are welcome as the project matures.
+
+When reporting a bug, please include:
+
+- Garry's Mod branch/build if relevant.
+- Client OS (Windows/Linux).
+- Whether the issue occurs in single-player, listen server, or dedicated server.
+- Relevant console/Lua errors.
+- Reproduction steps.
+
+## Credits
+
+### Original AirWars
+- The HellBox
+- Original AirWars contributors
+
+### AirWars: Skyfall
+- HUHman416 — Project maintainer
+- Community contributors
+
+### Development Assistance
+- **ChatGPT by OpenAI** — programming, debugging, design assistance, documentation, research, and development planning
+
+AirWars: Skyfall is not affiliated with Valve, Facepunch Studios, Muse Games, or OpenAI.
