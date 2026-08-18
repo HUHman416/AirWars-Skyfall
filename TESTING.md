@@ -4,6 +4,8 @@ Skyfall includes a server-side developer test harness so most repeatable checks 
 
 All state-changing test commands require an administrator or the server console. `aw_test_buildship` and `aw_test_respawn` must be run by an in-game admin player because they operate on the issuing player/team.
 
+When test commands are issued by an in-game admin, Skyfall writes the test output to that player's developer console only. When issued from the server console, output is written to the server console only. This avoids duplicate output on listen servers.
+
 ## Fast local v0.1 test
 
 For a quick Resurrection pass:
@@ -20,7 +22,7 @@ aw_test_startfight
 aw_test_all
 ```
 
-4. Manually verify that the generated craft can be controlled and that its weapons can be used.
+4. Manually verify that the generated craft can be controlled, walked around on, and that its weapons can be used.
 5. Run:
 
 ```text
@@ -56,9 +58,9 @@ A warning is not automatically a broken test. For example, having no active ship
 Prints a compact snapshot of the current state, timer, team count, active ship count, build-prop count, and developer-mode status.
 
 ### `aw_test_buildship`
-Deletes the issuing admin player's existing build props and creates a standardized ten-part v0.1 test craft containing:
+Deletes the issuing admin player's existing build props and creates a standardized fifteen-part v0.1 test craft containing:
 
-- hull plate
+- six large metal plates forming a 3x2 walkable deck
 - steering wheel
 - sail
 - balloon
@@ -69,7 +71,7 @@ Deletes the issuing admin player's existing build props and creates a standardiz
 - grappling hook
 - bomb
 
-This is intended to replace repetitive hand-building during compatibility testing.
+This is intended to replace repetitive hand-building during compatibility testing while providing enough deck area for player-on-moving-ship physics tests.
 
 ### `aw_test_ship [team id]`
 Prints structural information for an active ship. If no team ID is supplied, Skyfall tries the issuing player's current ship and then the first active ship.
@@ -122,6 +124,10 @@ The harness can validate state and data, but Source/Garry's Mod physics and play
 - no Lua errors appear in server or client console
 
 As new Skyfall systems are added, their automated checks and test fixtures should be added to this harness rather than creating separate one-off test code.
+
+## First v0.1 local result
+
+The first Linux/listen-server test completed the automated post-reset smoke test with **42 PASS / 1 expected WARN / 0 FAIL**. The warning was the expected BUILDING-state condition where no active combat ships exist. The generated test craft's original deck was too small for useful player movement testing, which prompted the expanded fifteen-part test fixture now described above.
 
 ## Testing philosophy
 
