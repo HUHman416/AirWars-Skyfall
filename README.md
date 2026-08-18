@@ -24,6 +24,24 @@ The current milestone intentionally focuses on restoring the original AirWars ga
 - Test Windows and Linux clients.
 - Preserve original gameplay until the baseline is stable.
 
+## Developer Testing
+
+Skyfall includes an admin/server-console test harness so repeatable compatibility checks do not need to be performed by hand.
+
+A typical v0.1 local test is:
+
+```text
+aw_test_devmode 1
+aw_test_all
+aw_test_buildship
+aw_test_startfight
+aw_test_all
+```
+
+The test harness can generate a standardized ship containing the legacy helm, propulsion/lift components, player spawn, ammunition storage, and every current ship weapon. It can also force round transitions, reset rounds, inspect active ships, and run automated `PASS` / `WARN` / `FAIL` smoke tests.
+
+See [TESTING.md](TESTING.md) for the full command reference and manual regression checklist.
+
 ## Skyfall Vision
 
 After the original gamemode is stable, planned systems include:
@@ -67,6 +85,7 @@ When reporting a bug, please include:
 - Whether the issue occurs in single-player, listen server, or dedicated server.
 - Relevant console/Lua errors.
 - Reproduction steps.
+- Output from `aw_test_all` when applicable.
 
 ## Credits
 
