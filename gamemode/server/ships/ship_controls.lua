@@ -35,10 +35,6 @@ hook.Add("KeyPress", "Ship Controls PBD", function(ply, key)
 	end
 end)
 
-hook.Add("Think", "Ships Jingle", function()
-
-end)
-
 hook.Add("KeyRelease", "Ship Controls PBU", function(ply, key)
 	local controller = ply:GetEntityUnderControl()
 	if !IsValid(controller) or controller:GetClass() != "aw_ship_controller" then return end
@@ -63,10 +59,8 @@ hook.Add("KeyRelease", "Ship Controls PBU", function(ply, key)
 		if key == IN_JUMP then
 			player_ship.direction.direction.z = 0
 		end
-		if key == IN_RELOAD then
-			if player:IsInControl() then
-				player:ExitControl()
-			end
+		if key == IN_RELOAD and ply:IsInControl() then
+			ply:ExitControl()
 		end
 	end
 end)
@@ -102,8 +96,6 @@ hook.Add("Think", "Update Ships Controls", function()
 		local damping = ship.velocity * 0.01
 		ship.velocity:Add(-damping)
 
-		--ship.angle_velocity.x = ship.direction.direction.x * (ship.speed / 50)
-		--ship.angle_velocity.x = ship.angle_velocity.x - ship.local_angle.x / 2
 		ship.angle_velocity = ship.angle_velocity + (angle / 4 * efficiency)
 		local angle_damping = ship.angle_velocity * 0.01
 		ship.angle_velocity = ship.angle_velocity - angle_damping
@@ -114,10 +106,8 @@ hook.Add("Think", "Update Ships Controls", function()
 
 		ship.angles:Add(ship.angle_velocity * FrameTime())
 		ship.position:Add(ship.velocity * FrameTime())
-		--ship.angles = local_rotation_to_global(ship.local_angle)
 	end
 end)
-
 
 hook.Add("aw_player_exit_control", "Reset ship velocity", function(player, controller)
 	if !IsValid(controller) or controller:GetClass() != "aw_ship_controller" then return end
