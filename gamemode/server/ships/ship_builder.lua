@@ -12,6 +12,12 @@ function AirWars:BuildShipPart(ship, part)
     ent:SetAngles(part.angle)
     ent.part_id = part.id
     ent:SetAWTeam(part.aw_team or ship.id)
+
+    if part.custom_info and part.custom_info.skyfall_weapon_profile then
+        ent.SkyfallWeaponProfile = part.custom_info.skyfall_weapon_profile
+        ent:SetNWString("skyfall_weapon_profile", part.custom_info.skyfall_weapon_profile)
+    end
+
     ent:Spawn()
     ent:Activate()
     ent.ship_collision = true
@@ -46,7 +52,8 @@ local function setup_part(entity, ship)
     part.max_health = math.max(1, tonumber(part.info.health) or 100)
     part.health = part.max_health
     part.component_type = Skyfall.GetComponentType(part.entity, part.custom_info)
-    part.armor = tonumber(part.info.armor) or 0
+    local explicit_armor = tonumber(part.info.armor)
+    part.armor = explicit_armor ~= nil and explicit_armor or Skyfall.DefaultArmorForPart(part)
 
     ship:AddPart(part)
     return part
