@@ -1,3 +1,4 @@
+include("skyfall_core.lua")
 include("player.lua")
 include("prop_spawner.lua")
 include("pointshop.lua")
