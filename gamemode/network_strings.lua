@@ -1,48 +1,43 @@
-util.AddNetworkString("aw_spawn_prop")
--- SERVER:Sync parts
-util.AddNetworkString("aw_sync_parts")
--- CLIENT:Send signal to sync ship parts(Called after aw_sync_ship)
-util.AddNetworkString("aw_sync_parts")
--- SERVER:Send basic information about ship
-util.AddNetworkString("aw_sync_ship")
--- SERVER:Removes all the ships, respawns players
-util.AddNetworkString("aw_round_reset")
--- SERVER: Assigns player to ship
-util.AddNetworkString("aw_assign_ship")
--- SERVER: Sync direction of the ship
-util.AddNetworkString("aw_sync_direction")
--- SERVER: Sync ship positions to prevent desync
-util.AddNetworkString("aw_sync_ship_position")
--- CLIENT: Send team join request
-util.AddNetworkString("aw_send_team_request")
--- SERVER: Send request to play weapon effect
-util.AddNetworkString("aw_play_weapon_effect")
--- SERVER: Sync part health update
-util.AddNetworkString("aw_sync_part_health")
--- SERVER: Sync game state(eg ship cost and weight, current game stage)
-util.AddNetworkString("aw_sync_game_state")
--- CLIENT: Send request to create team
-util.AddNetworkString("aw_change_team_name")
--- SERVER: Send request to the leader
-util.AddNetworkString("aw_team_request")
--- CLIENT: Accept request
-util.AddNetworkString("aw_accept_team_request")
--- CLIENT: Kick player
-util.AddNetworkString("aw_team_kick_player")
--- SERVER: Make client destroy ship
-util.AddNetworkString("aw_destroy_ship")
--- SERVER: Signal hit
-util.AddNetworkString("aw_bullet_hit")
--- SERVER: Signal hit from players weapon
-util.AddNetworkString("aw_weapon_effect")
+-- AirWars: Skyfall network string registry.
+-- Keep this file declarative: validation/rate limiting belongs in receivers.
 
-util.AddNetworkString("aw_effect")
+local NETWORK_STRINGS = {
+    -- Legacy AirWars protocol
+    "aw_spawn_prop",
+    "aw_sync_parts",
+    "aw_sync_ship",
+    "aw_round_reset",
+    "aw_assign_ship",
+    "aw_sync_direction",
+    "aw_sync_ship_position",
+    "aw_send_team_request",
+    "aw_play_weapon_effect",
+    "aw_sync_part_health",
+    "aw_sync_game_state",
+    "aw_change_team_name",
+    "aw_team_request",
+    "aw_accept_team_request",
+    "aw_team_kick_player",
+    "aw_destroy_ship",
+    "aw_bullet_hit",
+    "aw_weapon_effect",
+    "aw_effect",
+    "aw_player_sync_data",
+    "aw_update_flag",
+    "aw_sync_flag",
+    "aw_pointshop_wear",
+    "aw_player_sync_wearables",
 
-util.AddNetworkString("aw_player_sync_data")
+    -- Skyfall extension protocol
+    "aw_skyfall_part_state",
+    "aw_skyfall_spot",
+    "aw_skyfall_mission",
+    "aw_skyfall_weather",
+    "aw_skyfall_notice"
+}
 
-util.AddNetworkString("aw_update_flag")
-util.AddNetworkString("aw_sync_flag")
+for _, name in ipairs(NETWORK_STRINGS) do
+    util.AddNetworkString(name)
+end
 
--- POINTSHOP:
-util.AddNetworkString("aw_pointshop_wear")
-util.AddNetworkString("aw_player_sync_wearables")
+Skyfall.NetworkStrings = NETWORK_STRINGS

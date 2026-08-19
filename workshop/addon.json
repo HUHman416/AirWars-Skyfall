@@ -1,0 +1,14 @@
+{
+  "title": "AirWars: Skyfall",
+  "type": "gamemode",
+  "tags": ["fun", "roleplay"],
+  "ignore": [
+    "*.psd",
+    "*.xcf",
+    "*.blend",
+    "*.git*",
+    "build/*",
+    "docs/*",
+    "tools/*"
+  ]
+}

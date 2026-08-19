@@ -1,4 +1,9 @@
-concommand.Add( "set_time", function( ply, cmd, args )
-	if IsValid(ply) and !ply:IsAdmin() then return end
-	AirWars:SetTimeLeft(util.StringToType( args[1], "int" ))
-end )
+concommand.Add("set_time", function(ply, _, args)
+    if IsValid(ply) and not ply:IsAdmin() then return end
+    AirWars:SetTimeLeft(tonumber(args[1]) or 0)
+end)
+
+-- AirWars: Skyfall developer tooling.
+include("server/dev_admin.lua")
+include("server/dev_tests_v2.lua")
+include("server/dev_tests_1_0.lua")

@@ -57,9 +57,9 @@ Release at friday, shit, I'm nervous as fuck
 -- FIXME: Remove
 --resource.AddWorkshop( "1849075184" )
 
-GM.Version = "0.1"
-GM.Name = "Air Wars"
-GM.Author = "The HellBox"
+GM.Version = "0.1.0-skyfall-dev"
+GM.Name = "AirWars: Skyfall"
+GM.Author = "The HellBox & AirWars: Skyfall Contributors"
 
 AirWars = {}
 
@@ -149,7 +149,7 @@ function AirWars:GenerateTeamId()
 	local id = math.floor(math.Rand(1, 1000))
 	for k, v in pairs(player.GetAll()) do
 		if v:AWIsInTeam(id) then
-			return AirWars:GenerateTeamId()()
+			return AirWars:GenerateTeamId()
 		end
 	end
 	return id
