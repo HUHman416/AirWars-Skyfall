@@ -56,34 +56,20 @@ function Skyfall.TickComponentFires()
     for _, ship in pairs(world_ships or {}) do
         local burning = {}
         for _, part in pairs(ship.parts or {}) do
-            if (part.fire_stacks or 0) > 0 then
-                table.insert(burning, part)
-            end
+            if (part.fire_stacks or 0) > 0 then table.insert(burning, part) end
         end
 
         for _, part in ipairs(burning) do
             if not part.destroyed then
                 local stacks = math.Clamp(part.fire_stacks or 0, 0, 20)
                 local damage = 0.75 + stacks * 0.85
-                part:ApplyDamage(damage, {
-                    kind = "fire",
-                    penetration = 1,
-                    component_multiplier = 1,
-                    hull_multiplier = 1
-                }, "fire")
+                part:ApplyDamage(damage, {kind = "fire", penetration = 1, component_multiplier = 1, hull_multiplier = 1}, "fire")
 
-                -- The more intense the fire, the more likely it jumps to an
-                -- adjacent component. Buffed/chem-treated parts resist stacks
-                -- through Part:AddFireStacks.
                 local spread_chance = math.Clamp(0.015 * stacks, 0, 0.22)
                 for _, neighbor in ipairs(nearby_parts(ship, part, 130)) do
-                    if math.Rand(0, 1) < spread_chance then
-                        neighbor:AddFireStacks(1)
-                    end
+                    if math.Rand(0, 1) < spread_chance then neighbor:AddFireStacks(1) end
                 end
 
-                -- Low fires can naturally burn down; severe fires generally
-                -- require crew intervention.
                 if stacks <= 2 and math.Rand(0, 1) < 0.12 then
                     part:SetFireStacks(stacks - 1)
                 end
@@ -94,6 +80,22 @@ function Skyfall.TickComponentFires()
 end
 
 timer.Create("AirWars_Skyfall_FireTick", 1, 0, Skyfall.TickComponentFires)
+
+-- Hull plates form the structural health pool. Once no hull health remains the
+-- entire virtual ship is considered broken apart, which gives both PvP and PvE a
+-- deterministic destruction condition instead of relying on every entity being gone.
+hook.Add("Skyfall_ComponentDestroyed", "Skyfall_StructuralDestruction", function(ship)
+    if not istable(ship) or not world_ships or world_ships[ship.id] ~= ship then return end
+    local summary = Skyfall.GetShipComponentSummary(ship)
+    local hull = summary.by_type and summary.by_type[Skyfall.ComponentTypes.HULL]
+    if hull and hull.max_health > 0 and hull.health <= 0 then
+        timer.Simple(0, function()
+            if world_ships and world_ships[ship.id] == ship then
+                AirWars:DestroyShip(ship)
+            end
+        end)
+    end
+end)
 
 concommand.Add("aw_fire_status", function(ply)
     if not IsValid(ply) then return end
