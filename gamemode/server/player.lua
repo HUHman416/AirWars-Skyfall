@@ -15,17 +15,38 @@ end
 function meta:ExitControl()
     local entity_under_control = self:GetEntityUnderControl()
     if IsValid(entity_under_control) then
-        entity_under_control:SetController(Entity(-1))
+        if entity_under_control.SetController then
+            entity_under_control:SetController(Entity(-1))
+        end
+
+        if entity_under_control.GetAWTeam and world_ships then
+            local ship = world_ships[entity_under_control:GetAWTeam()]
+            if ship and ship.active_pilot == self then
+                ship.active_pilot = nil
+            end
+        end
     end
+
     self:SetNWEntity("aw_entity_under_control", Entity(-1))
     hook.Run("aw_player_exit_control", self, entity_under_control)
 end
 
 function meta:AWControl(entity)
+    if not IsValid(entity) then return false end
     if self:IsInControl() then
         self:ExitControl()
     end
+
     self:SetNWEntity("aw_entity_under_control", entity)
+    if entity.SetController then entity:SetController(self) end
+
+    if entity:GetClass() == "aw_ship_controller" and entity.GetAWTeam and world_ships then
+        local ship = world_ships[entity:GetAWTeam()]
+        if ship then ship.active_pilot = self end
+    end
+
+    hook.Run("Skyfall_PlayerEnteredControl", self, entity)
+    return true
 end
 
 function meta:GetEntityUnderControl()
