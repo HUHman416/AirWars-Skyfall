@@ -1,5 +1,6 @@
 include("skyfall_config.lua")
 include("skyfall_crew.lua")
+include("skyfall_combat.lua")
 include("player.lua")
 include("props_collision.lua")
 include("teams.lua")
@@ -36,7 +37,6 @@ hook.Add("Move", "FreezePlayer", function(player, move_data)
     end
 end)
 
--- http://lua-users.org/wiki/CopyTable
 function deepcopy(orig)
     local orig_type = type(orig)
     local copy
