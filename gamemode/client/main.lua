@@ -6,6 +6,7 @@ include("pointshop.lua")
 include("sounds.lua")
 include("player.lua")
 include("props_highlighter.lua")
+include("accessibility.lua")
 include("skyfall_hud.lua")
 include("weather.lua")
 
