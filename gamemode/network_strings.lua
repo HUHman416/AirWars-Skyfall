@@ -2,6 +2,7 @@
 -- Keep this file declarative: validation/rate limiting belongs in receivers.
 
 local NETWORK_STRINGS = {
+    -- Legacy AirWars protocol
     "aw_spawn_prop",
     "aw_sync_parts",
     "aw_sync_ship",
@@ -25,7 +26,14 @@ local NETWORK_STRINGS = {
     "aw_update_flag",
     "aw_sync_flag",
     "aw_pointshop_wear",
-    "aw_player_sync_wearables"
+    "aw_player_sync_wearables",
+
+    -- Skyfall extension protocol
+    "aw_skyfall_part_state",
+    "aw_skyfall_spot",
+    "aw_skyfall_mission",
+    "aw_skyfall_weather",
+    "aw_skyfall_notice"
 }
 
 for _, name in ipairs(NETWORK_STRINGS) do
