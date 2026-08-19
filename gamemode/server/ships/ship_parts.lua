@@ -15,6 +15,7 @@ function part_table_simple(part)
         ship_id = part.ship_id,
         info = part.info,
         entity = part.entity,
+        custom_info = part.custom_info,
         component_type = part.component_type,
         fire_stacks = part.fire_stacks or 0,
         disabled = part.disabled == true,
@@ -88,7 +89,10 @@ local function add_health(part, amount, source)
         return true
     end
 
-    if part.health > max_health(part) * 0.20 then
+    local fraction = part.health / max_health(part)
+    if fraction <= 0.12 then
+        part.disabled = true
+    elseif fraction > 0.20 then
         part.disabled = false
     end
 
@@ -98,17 +102,38 @@ local function add_health(part, amount, source)
     return true
 end
 
-local function apply_damage(part, amount, damage_type, attacker)
+-- damage_spec may be a legacy string or a Skyfall damage table:
+-- {kind, penetration, component_multiplier, hull_multiplier, armor_multiplier}.
+local function apply_damage(part, amount, damage_spec, attacker)
     if part.destroyed then return 0 end
     amount = math.max(0, tonumber(amount) or 0)
     if amount <= 0 then return 0 end
 
-    local multiplier = 1
-    if damage_type == "component" then multiplier = 1.25 end
-    if damage_type == "hull" and part.component_type ~= Skyfall.ComponentTypes.HULL then multiplier = 0.85 end
+    local spec = istable(damage_spec) and damage_spec or {kind = damage_spec}
+    local kind = tostring(spec.kind or "standard")
+    local penetration = math.Clamp(tonumber(spec.penetration) or 0, 0, 1)
+    local armor_multiplier = math.max(0, tonumber(spec.armor_multiplier) or 1)
+    local armor = math.Clamp((tonumber(part.armor) or 0) * armor_multiplier, 0, 0.90)
+    local effective_armor = armor * (1 - penetration)
 
-    local applied = amount * multiplier
-    part:AddHealth(-applied, attacker or damage_type)
+    local profile_multiplier = 1
+    if part.component_type == Skyfall.ComponentTypes.HULL then
+        profile_multiplier = tonumber(spec.hull_multiplier) or 1
+    else
+        profile_multiplier = tonumber(spec.component_multiplier) or 1
+    end
+
+    if kind == "component" and part.component_type ~= Skyfall.ComponentTypes.HULL then
+        profile_multiplier = profile_multiplier * 1.20
+    elseif kind == "hull" and part.component_type ~= Skyfall.ComponentTypes.HULL then
+        profile_multiplier = profile_multiplier * 0.85
+    end
+
+    local applied = amount * profile_multiplier * (1 - effective_armor)
+    if applied <= 0 then return 0 end
+
+    part:AddHealth(-applied, attacker or kind)
+    hook.Run("Skyfall_ComponentDamaged", world_ships[part.ship_id], part, applied, spec, attacker)
     return applied
 end
 
@@ -118,11 +143,24 @@ local function set_fire_stacks(part, stacks)
 end
 
 local function add_fire_stacks(part, stacks)
-    part:SetFireStacks((part.fire_stacks or 0) + (tonumber(stacks) or 0))
+    stacks = math.max(0, tonumber(stacks) or 0)
+    if stacks <= 0 then return end
+
+    if (part.fire_protected_until or 0) > CurTime() then
+        stacks = stacks * 0.25
+    end
+
+    local whole = math.floor(stacks)
+    if whole <= 0 and math.Rand(0, 1) < stacks then whole = 1 end
+    if whole > 0 then
+        part:SetFireStacks((part.fire_stacks or 0) + whole)
+    end
 end
 
 local function apply_buff(part, duration, multiplier)
-    part.buff_until = math.max(part.buff_until or 0, CurTime() + math.max(0, tonumber(duration) or 0))
+    duration = math.max(0, tonumber(duration) or 0)
+    part.buff_until = math.max(part.buff_until or 0, CurTime() + duration)
+    part.fire_protected_until = math.max(part.fire_protected_until or 0, CurTime() + duration)
     part.buff_multiplier = math.Clamp(tonumber(multiplier) or 1.10, 1, 1.35)
     sync_state(part)
 end
@@ -145,10 +183,12 @@ function Part:new(ship_id)
         angle = Angle(),
         model = "models/props_phx/construct/metal_plate1.mdl",
         info = {},
+        custom_info = {},
         id = id,
         ship_id = ship_id,
         component_type = Skyfall.ComponentTypes.HULL,
         fire_stacks = 0,
+        fire_protected_until = 0,
         disabled = false,
         destroyed = false,
         armor = 0,
@@ -176,6 +216,7 @@ function AirWars:RebuildPart(ship, part_id, engineer)
     part.destroyed = false
     part.disabled = false
     part.fire_stacks = 0
+    part.fire_protected_until = CurTime() + 4
     part.health = math.max(1, max_health(part) * 0.35)
     ship.destroyed_parts[part_id] = nil
     ship.parts[part_id] = part
