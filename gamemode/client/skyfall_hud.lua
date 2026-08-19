@@ -1,21 +1,14 @@
--- AirWars: Skyfall crew/status HUD.
+-- AirWars: Skyfall crew/status and Alliance mission HUD.
 
 Skyfall = Skyfall or {}
 Skyfall.SpottedShips = Skyfall.SpottedShips or {}
+Skyfall.ClientMission = Skyfall.ClientMission or {active = false}
 
 local enabled = CreateClientConVar("aw_skyfall_hud", "1", true, false, "Show the Skyfall crew/component HUD")
 
-surface.CreateFont("SkyfallHUDTitle", {
-    font = "Trebuchet24",
-    size = 22,
-    weight = 800
-})
-
-surface.CreateFont("SkyfallHUDBody", {
-    font = "Trebuchet18",
-    size = 16,
-    weight = 600
-})
+surface.CreateFont("SkyfallHUDTitle", {font = "Trebuchet24", size = 22, weight = 800})
+surface.CreateFont("SkyfallHUDBody", {font = "Trebuchet18", size = 16, weight = 600})
+surface.CreateFont("SkyfallMissionTitle", {font = "Trebuchet24", size = 24, weight = 900})
 
 local COMPONENT_LABELS = {
     hull = "Hull",
@@ -53,11 +46,35 @@ net.Receive("aw_skyfall_spot", function()
     Skyfall.SpottedShips[ship_id] = CurTime() + math.max(0, duration)
 end)
 
+net.Receive("aw_skyfall_mission", function()
+    Skyfall.ClientMission = net.ReadTable() or {active = false}
+end)
+
+local function draw_mission()
+    local mission = Skyfall.ClientMission
+    if not mission or not mission.active then return end
+
+    local width = math.min(620, ScrW() - 80)
+    local x = (ScrW() - width) / 2
+    local y = 26
+    draw.RoundedBox(8, x, y, width, 86, Color(15, 18, 22, 218))
+    draw.RoundedBox(8, x + 3, y + 3, width - 6, 4, Color(205, 165, 75, 235))
+    draw.SimpleText(mission.label or "ALLIANCE MISSION", "SkyfallMissionTitle", ScrW() / 2, y + 14, Color(232, 195, 104), TEXT_ALIGN_CENTER)
+    draw.SimpleText(mission.objective or "", "SkyfallHUDBody", ScrW() / 2, y + 45, Color(235, 235, 235), TEXT_ALIGN_CENTER)
+
+    local extra = string.format("Time %d:%02d", math.floor((mission.time_left or 0) / 60), (mission.time_left or 0) % 60)
+    if (mission.waves or 0) > 0 then extra = extra .. string.format("   Wave %d/%d", mission.wave or 0, mission.waves) end
+    if (mission.score or 0) > 0 then extra = extra .. "   Progress " .. tostring(mission.score) end
+    draw.SimpleText(extra, "SkyfallHUDBody", ScrW() / 2, y + 66, Color(180, 198, 210), TEXT_ALIGN_CENTER)
+end
+
 hook.Add("HUDPaint", "Skyfall_CrewHUD", function()
     if not enabled:GetBool() then return end
     local ply = LocalPlayer()
     if not IsValid(ply) or ply:IsSpectator() then return end
     if not istable(game_state) or game_state.state ~= GAME_STATE_FIGHT then return end
+
+    draw_mission()
 
     local ship = world_ships and world_ships[ply:GetCurrentShip()]
     if not ship then return end
@@ -69,7 +86,7 @@ hook.Add("HUDPaint", "Skyfall_CrewHUD", function()
 
     draw.RoundedBox(8, x, y, width, 210, Color(15, 18, 22, 205))
     draw.SimpleText("AIRWARS: SKYFALL", "SkyfallHUDTitle", x + 12, y + 10, Color(224, 185, 92), TEXT_ALIGN_LEFT)
-    draw.SimpleText("Role: " .. ply:GetSkyfallRoleData().name, "SkyfallHUDBody", x + 12, y + 38, Color(235, 235, 235), TEXT_ALIGN_LEFT)
+    draw.SimpleText("Role: " .. ply:GetSkyfallRoleData().name .. "  Ammo: " .. ply:GetNWString("skyfall_ammo", "standard"), "SkyfallHUDBody", x + 12, y + 38, Color(235, 235, 235), TEXT_ALIGN_LEFT)
 
     local line_y = y + 65
     local order = {"hull", "helm", "propulsion", "lift", "weapon"}
