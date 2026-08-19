@@ -1,4 +1,5 @@
 include("skyfall_config.lua")
+include("skyfall_crew.lua")
 include("player.lua")
 include("props_collision.lua")
 include("teams.lua")
