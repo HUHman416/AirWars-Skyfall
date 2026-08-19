@@ -10,10 +10,26 @@ if isfunction(Skyfall.SpawnBuildDescriptors) and not Skyfall._fleet_spawn_wrappe
             return false, "Blueprint/prefab loading is disabled by this server"
         end
         local ok, message, count = original_spawn_descriptors(ply, parts, origin, clear_existing)
-        if ok and IsValid(ply) then
-            hook.Run("Skyfall_BuildTemplateLoaded", ply, parts, count)
-        end
+        if ok and IsValid(ply) then hook.Run("Skyfall_BuildTemplateLoaded", ply, parts, count) end
         return ok, message, count
+    end
+end
+
+if isfunction(Skyfall.StartMission) and not Skyfall._fleet_mission_wrapper then
+    Skyfall._fleet_mission_wrapper = true
+    local original_start_mission = Skyfall.StartMission
+    Skyfall.StartMission = function(mission_type)
+        if not Skyfall.IsFeatureEnabled("pve") then return false, "Alliance PvE is disabled by this server" end
+        return original_start_mission(mission_type)
+    end
+end
+
+if isfunction(Skyfall.BeginCapture) and not Skyfall._fleet_capture_wrapper then
+    Skyfall._fleet_capture_wrapper = true
+    local original_begin_capture = Skyfall.BeginCapture
+    Skyfall.BeginCapture = function(ply)
+        if not Skyfall.IsFeatureEnabled("boarding") then return false, "Boarding/capture is disabled by this server" end
+        return original_begin_capture(ply)
     end
 end
 
@@ -48,8 +64,26 @@ end)
 
 hook.Add("Skyfall_AIShipSpawned", "Skyfall_GlobalAIDifficulty", function(ship)
     local setting = Skyfall.ServerSettings and Skyfall.ServerSettings.ai_difficulty
-    if ship and setting then
-        ship.ai_skill = math.Clamp((ship.ai_skill or 1) * setting:GetFloat(), 0.25, 3.5)
+    if ship and setting then ship.ai_skill = math.Clamp((ship.ai_skill or 1) * setting:GetFloat(), 0.25, 3.5) end
+end)
+
+-- Replace Stormfront's default auto-weather hook with the server-configurable one.
+hook.Remove("AirWars_RoundStart", "Skyfall_AutoWeather")
+hook.Add("AirWars_RoundStart", "Skyfall_AutoWeather", function()
+    if not Skyfall.IsFeatureEnabled("weather") then
+        Skyfall.SetWeather("clear")
+        return
+    end
+    local setting = Skyfall.ServerSettings and Skyfall.ServerSettings.auto_weather
+    if setting and not setting:GetBool() then
+        Skyfall.SyncWeather()
+        return
+    end
+    if Skyfall.Weather.type ~= "clear" then return end
+    if math.Rand(0, 1) < 0.22 then
+        Skyfall.SetWeather(table.Random({"fog", "gale", "storm"}))
+    else
+        Skyfall.SyncWeather()
     end
 end)
 
