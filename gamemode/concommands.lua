@@ -6,3 +6,4 @@ end)
 -- AirWars: Skyfall developer tooling.
 include("server/dev_admin.lua")
 include("server/dev_tests_v2.lua")
+include("server/dev_tests_1_0.lua")
