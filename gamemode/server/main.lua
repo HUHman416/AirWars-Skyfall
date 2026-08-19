@@ -9,3 +9,4 @@ include("grappling_hook.lua")
 
 include("game_state/main.lua")
 include("ships/main.lua")
+include("crew_system.lua")
