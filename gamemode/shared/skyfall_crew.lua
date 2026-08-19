@@ -1,6 +1,7 @@
 -- AirWars: Skyfall multicrew definitions shared between client and server.
 
 Skyfall = Skyfall or {}
+include("skyfall_cosmetics.lua")
 
 Skyfall.Roles = Skyfall.Roles or {
     crew = {
