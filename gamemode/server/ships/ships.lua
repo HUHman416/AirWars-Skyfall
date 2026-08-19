@@ -6,6 +6,17 @@ local function add_part(self, part)
     return true
 end
 
+local function skyfall_ship_state(self)
+    return {
+        spotted_until = self.spotted_until or 0,
+        faction = self.faction or "player",
+        livery = self.livery or "brass",
+        captured_by = self.captured_by,
+        ai_name = self.ai_name,
+        ai_controlled = self.ai_controlled == true
+    }
+end
+
 local function sync(self)
     net.Start("aw_sync_ship")
     net.WriteTable({
@@ -15,10 +26,7 @@ local function sync(self)
         angles = self.angles,
         center = self.center,
         parts = {},
-        skyfall = {
-            spotted_until = self.spotted_until or 0,
-            faction = self.faction or "player"
-        }
+        skyfall = skyfall_ship_state(self)
     })
     net.Broadcast()
 end
@@ -34,10 +42,7 @@ local function sync_to_player(self, ply)
         center = self.center,
         crew_positions = get_crew(self),
         parts = {},
-        skyfall = {
-            spotted_until = self.spotted_until or 0,
-            faction = self.faction or "player"
-        }
+        skyfall = skyfall_ship_state(self)
     })
     net.Send(ply)
 end
@@ -124,6 +129,7 @@ function AirWars:CreateShip(id, options)
         parts = {},
         destroyed_parts = {},
         faction = options.faction or "player",
+        livery = options.livery or "brass",
         ai_controlled = options.ai_controlled == true,
         spotted_until = 0,
         spotted_by_team = nil
