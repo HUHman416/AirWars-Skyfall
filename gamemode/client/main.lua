@@ -7,6 +7,7 @@ include("sounds.lua")
 include("player.lua")
 include("props_highlighter.lua")
 include("skyfall_hud.lua")
+include("weather.lua")
 
 include("ships/main.lua")
 include("render/main.lua")
